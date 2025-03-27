@@ -1,0 +1,268 @@
+""" import pygame
+import random
+
+# Initialize pygame
+pygame.init()
+
+# Screen dimensions
+WIDTH, HEIGHT = 400, 600
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Flappy Bird")
+
+# Colors
+WHITE = (255, 255, 255)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)  
+BLACK = (0, 0, 0)
+
+# Game variables
+GRAVITY = 0.5
+FLAP_STRENGTH = -10
+PIPE_WIDTH = 60
+PIPE_GAP = 300
+BIRD_WIDTH = 40
+BIRD_HEIGHT = 40
+PIPE_VELOCITY = 5
+
+# Bird class
+class Bird:
+    def __init__(self):
+        self.x = WIDTH // 4
+        self.y = HEIGHT // 2
+        self.vel = 0
+        self.width = BIRD_WIDTH
+        self.height = BIRD_HEIGHT
+
+    def flap(self):
+        self.vel = FLAP_STRENGTH
+
+    def move(self):
+        self.vel += GRAVITY
+        self.y += self.vel
+
+    def draw(self):
+        pygame.draw.rect(screen, BLUE, (self.x, self.y, self.width, self.height))
+
+# Pipe class
+class Pipe:
+    def __init__(self):
+        self.x = WIDTH
+        self.height = random.randint(100, HEIGHT - PIPE_GAP - 100)
+        self.top = self.height
+        self.bottom = self.height + PIPE_GAP
+        self.width = PIPE_WIDTH
+        self.passed = False
+
+    def move(self):
+        self.x -= PIPE_VELOCITY
+
+    def draw(self):
+        pygame.draw.rect(screen, GREEN, (self.x, 0, self.width, self.top))
+        pygame.draw.rect(screen, GREEN, (self.x, self.bottom, self.width, HEIGHT - self.bottom))
+
+# Main game loop
+def game_loop():
+    bird = Bird()
+    pipes = [Pipe()]
+    clock = pygame.time.Clock()
+    score = 0
+    running = True
+
+    while running:
+        screen.fill(WHITE)
+
+        # Event handling
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    bird.flap()
+
+        # Move bird
+        bird.move()
+
+        # Move and draw pipes
+        for pipe in pipes:
+            pipe.move()
+            pipe.draw()
+
+        # Remove pipes that are off-screen and add new ones
+        if pipes[0].x + pipes[0].width < 0:
+            pipes.pop(0)
+            pipes.append(Pipe())
+            score += 1
+
+        # Check for collisions
+        if bird.y <= 0 or bird.y + bird.height >= HEIGHT:
+            running = False
+
+        # Check if bird passes through pipe
+        for pipe in pipes:
+            if not pipe.passed and bird.x + bird.width > pipe.x + pipe.width:
+                pipe.passed = True
+                score += 1
+            if pipe.x < bird.x + bird.width and pipe.x + pipe.width > bird.x:
+                if bird.y < pipe.top or bird.y + bird.height > pipe.bottom:
+                    running = False
+
+        # Draw the bird
+        bird.draw()
+
+        # Draw score
+        font = pygame.font.SysFont("Arial", 24)
+        score_text = font.render(f"Score: {score}", True, BLACK)
+        screen.blit(score_text, (10, 10))
+
+        # Update display
+        pygame.display.update()
+
+        # Set game speed (FPS)
+        clock.tick(60)
+
+    pygame.quit()
+
+# Start the game
+game_loop()
+ """
+import pygame
+import time
+import random
+
+# Initialize pygame
+pygame.init()
+
+# Screen dimensions
+WIDTH = 600
+HEIGHT = 400
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Snake Game")
+
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (213, 50, 80)
+GREEN = (0, 255, 0)
+BLUE = (50, 153, 213)
+
+# Snake block size
+BLOCK_SIZE = 10
+
+# Game clock
+clock = pygame.time.Clock()
+SNAKE_SPEED = 15
+
+# Fonts
+font_style = pygame.font.SysFont("bahnschrift", 25)
+score_font = pygame.font.SysFont("comicsansms", 35)
+
+# Function to display the score
+def Your_score(score):
+    value = score_font.render("Your Score: " + str(score), True, BLACK)
+    screen.blit(value, [0, 0])
+
+# Function to display messages
+def message(msg, color):
+    mesg = font_style.render(msg, True, color)
+    screen.blit(mesg, [WIDTH / 6, HEIGHT / 3])
+
+# Main game loop
+def gameLoop():
+    game_over = False
+    game_close = False
+
+    # Starting position for the snake
+    x1 = WIDTH / 2
+    y1 = HEIGHT / 2
+
+    # Starting movement
+    x1_change = 0
+    y1_change = 0
+
+    # Snake body
+    snake_List = []
+    Length_of_snake = 1
+
+    # Food coordinates
+    foodx = round(random.randrange(0, WIDTH - BLOCK_SIZE) / 10.0) * 10.0
+    foody = round(random.randrange(0, HEIGHT - BLOCK_SIZE) / 10.0) * 10.0
+
+    while not game_over:
+
+        while game_close:
+            screen.fill(BLUE)
+            message("You Lost! Press Q-Quit or C-Play Again", RED)
+            Your_score(Length_of_snake - 1)
+            pygame.display.update()
+
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        game_over = True
+                        game_close = False
+                    if event.key == pygame.K_c:
+                        gameLoop()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game_over = True
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    x1_change = -BLOCK_SIZE
+                    y1_change = 0
+                elif event.key == pygame.K_RIGHT:
+                    x1_change = BLOCK_SIZE
+                    y1_change = 0
+                elif event.key == pygame.K_UP:
+                    y1_change = -BLOCK_SIZE
+                    x1_change = 0
+                elif event.key == pygame.K_DOWN:
+                    y1_change = BLOCK_SIZE
+                    x1_change = 0
+
+        # Check for boundary collisions
+        if x1 >= WIDTH or x1 < 0 or y1 >= HEIGHT or y1 < 0:
+            game_close = True
+
+        x1 += x1_change
+        y1 += y1_change
+        screen.fill(BLUE)
+
+        # Draw food
+        pygame.draw.rect(screen, GREEN, [foodx, foody, BLOCK_SIZE, BLOCK_SIZE])
+
+        # Snake body logic
+        snake_Head = []
+        snake_Head.append(x1)
+        snake_Head.append(y1)
+        snake_List.append(snake_Head)
+
+        if len(snake_List) > Length_of_snake:
+            del snake_List[0]
+
+        # Check for collision with the snake body
+        for x in snake_List[:-1]:
+            if x == snake_Head:
+                game_close = True
+
+        # Draw snake
+        for x in snake_List:
+            pygame.draw.rect(screen, BLACK, [x[0], x[1], BLOCK_SIZE, BLOCK_SIZE])
+
+        Your_score(Length_of_snake - 1)
+
+        pygame.display.update()
+
+        # Check if snake eats food
+        if x1 == foodx and y1 == foody:
+            foodx = round(random.randrange(0, WIDTH - BLOCK_SIZE) / 10.0) * 10.0
+            foody = round(random.randrange(0, HEIGHT - BLOCK_SIZE) / 10.0) * 10.0
+            Length_of_snake += 1
+
+        clock.tick(SNAKE_SPEED)
+
+    pygame.quit()
+    quit()
+
+# Start the game
+gameLoop()
