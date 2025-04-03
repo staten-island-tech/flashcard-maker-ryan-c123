@@ -34,3 +34,15 @@ print(Joanna.sell('Pork'))
 Alvin = Merchant('Alvin', ['Human', "Alvin's Servitude", 'Break', 'Organs'])
 print(Alvin.sell('Human')) """
 import json 
+
+class TeacherMode:
+    def __init__(self):
+        self.flashcards = {}
+    def add(self):
+        while True:
+            word = input("put in a phrase, or stop by typing stop")
+            if word == "stop":
+                break
+            ans = input(f"put an answer for {word}")
+            
+    
