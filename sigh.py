@@ -45,27 +45,47 @@ class TeacherMode:
 
     def add(self):
         while True:
-            word = input("put in a phrase, or stop by typing stop")
+            word = input("put in a phrase, or stop by typing stop: ")
             if word == "stop":
                 break
-            ans = input(f"put an answer for {word}")
+            ans = input(f"put an answer for {word}: ")
             self.flashcards[word] = ans
             self.save()
+
 """ flashcard = open("./FlashCards.json", encoding="utf8")
 data = json.load(flashcard) """
+sigma = 0
+duh = 0
+correct = 0
 class StudentMode:
-    def __init__(self, learn):
-        self.learn = learn
+    def __init__(self, filename="FlashCards.json"):
+        self.filename = filename
+        with open(self.filename, "r") as file:
+            self.learn = json.load(file)
     def learning(self):
-        for key, value in self.learn.Flashcards.json.items
-
+        for key, value in self.learn.items():
+            global sigma, duh, correct
+            word = key
+            ans = input(f"to leave say stop. What is the definition of {word}?: ")
+            if ans == value:
+                sigma += 1
+                duh = duh+sigma
+                correct +=1
+            elif ans == "stop":
+                print(f"You got a total of {correct} answers correct, and you got {duh} points thanks to your streak!")
+                return
+            else:
+                sigma = 0
+        print(f"You got a total of {correct} answers correct, and you got {duh} points thanks to your streak!")
 while True:
-    lols = input("Type 1 for Teacher Mode or 2 for Student Mode, or 3 to stop")
+    lols = input("Type 1 for Teacher Mode or 2 for Student Mode, or 3 to stop: ")
     if lols == "1":
         plus = TeacherMode()
         plus.add()
         break
     elif lols == "2":
+        study = StudentMode()
+        study.learning()
         break
     elif lols == "3":
         break
